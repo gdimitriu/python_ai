@@ -1,0 +1,109 @@
+from pathlib import Path
+import requests
+import argparse
+import pickle
+import gzip
+from matplotlib import pyplot
+from torch import optim
+import torch
+import torch.nn.functional as F
+from torch.utils.data import TensorDataset
+from torch.utils.data import DataLoader
+
+loss_func = F.cross_entropy
+
+FILENAME = "mnist.pkl.gz"
+PATH = Path("data")
+
+
+def build_arg_parser():
+    parser = argparse.ArgumentParser(description='MNIST data')
+    parser.add_argument('--input-dir', dest='input_dir', type=str,
+                        default='../../data', help='Directory for storing data')
+    return parser
+
+
+def download_mnist(path):
+    global PATH
+    DATA_PATH = Path(path)
+    PATH = DATA_PATH
+    URL = "https://github.com/pytorch/tutorials/raw/main/_static/"
+
+    if not (DATA_PATH / FILENAME).exists():
+        content = requests.get(URL + FILENAME).content
+        (DATA_PATH / FILENAME).open("wb").write(content)
+
+
+class Mnist_Logistic(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.lin = torch.nn.Linear(784, 10)
+
+    def forward(self, xb):
+        return self.lin(xb)
+
+
+def accuracy(out, yb):
+    preds = torch.argmax(out, dim=1)
+    return (preds == yb).float().mean()
+
+
+def get_model(lr):
+    model = Mnist_Logistic()
+    return model, optim.SGD(model.parameters(), lr=lr)
+
+
+def fit(model, epochs, train_dl, opt):
+    from IPython.core.debugger import set_trace
+    for epoch in range(epochs):
+        for xb, yb in train_dl:
+            # set_trace()
+            pred = model(xb)
+            loss = loss_func(pred, yb)
+
+            loss.backward()
+            opt.step()
+            opt.zero_grad()
+
+
+if __name__ == "__main__":
+    args = build_arg_parser().parse_args()
+    download_mnist(args.input_dir)
+    with gzip.open((PATH / FILENAME).as_posix(), "rb") as f:
+        ((x_train, y_train), (x_valid, y_valid), _) = pickle.load(f, encoding="latin-1")
+    pyplot.imshow(x_train[0].reshape((28, 28)), cmap="gray")
+    # ``pyplot.show()`` only if not on Colab
+    try:
+        import google.colab
+    except ImportError:
+        pyplot.show()
+    print(x_train.shape)
+
+    # convert our data
+    x_train, y_train, x_valid, y_valid = map(
+        torch.tensor, (x_train, y_train, x_valid, y_valid)
+    )
+    n, c = x_train.shape
+    print(x_train, y_train)
+    print(x_train.shape)
+    print(y_train.min(), y_train.max())
+
+    bs = 64  # batch size
+
+    xb = x_train[0:bs]  # a mini-batch from x
+    lr = 0.5  # learning rate
+    model, opt = get_model(lr)
+    preds = model(xb)  # predictions
+    print(preds[0], preds.shape)
+    yb = y_train[0:bs]
+
+    print(loss_func(preds, yb))
+    print(accuracy(preds, yb))
+
+    epochs = 2  # how many epochs to train for
+    train_ds = TensorDataset(x_train, y_train)
+    train_dl = DataLoader(train_ds, batch_size=bs)
+    fit(model, epochs, train_dl, opt)
+
+    print("loss funct and accuracy")
+    print(loss_func(model(xb), yb), accuracy(model(xb), yb))
