@@ -3,8 +3,7 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 import argparse
-from tensorflow.keras import layers
-
+from keras import layers
 
 def build_arg_parser():
     parser = argparse.ArgumentParser(description='classify preprocessing')

@@ -1,13 +1,13 @@
 # https://www.tensorflow.org/guide/keras/preprocessing_layers
 import numpy as np
 import tensorflow as tf
-from tensorflow import keras
+import keras
 from keras import layers
 
 
 def Quick_recipes():
-    from tensorflow import keras
-    from tensorflow.keras import layers
+    import keras
+    from keras import layers
     # image data augumentation
     # Create a data augmentation stage with horizontal flipping, rotations, zooms
     data_augmentation = keras.Sequential(

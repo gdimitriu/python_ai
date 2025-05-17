@@ -1,11 +1,11 @@
 # https://www.tensorflow.org/tutorials/load_data/text#example_2_predict_the_author_of_iliad_translations
 import collections
 import pathlib
-from tensorflow.keras import utils
+from keras import utils
 import tensorflow as tf
 import tensorflow_text as tf_text
-from tensorflow.keras import layers
-from tensorflow.keras import losses
+from keras import layers
+from keras import losses
 
 
 def labeler(example, index):

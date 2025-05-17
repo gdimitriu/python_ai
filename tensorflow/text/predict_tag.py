@@ -8,7 +8,7 @@ import keras
 from keras import layers
 from keras import losses
 from keras import utils
-from tensorflow.keras.layers import TextVectorization
+from keras.layers import TextVectorization
 import os
 
 import tensorflow_datasets as tfds

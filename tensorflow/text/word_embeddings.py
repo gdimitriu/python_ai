@@ -7,9 +7,8 @@ import string
 
 import keras
 import tensorflow as tf
-from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Dense, Embedding, GlobalAveragePooling1D
-from tensorflow.keras.layers import TextVectorization
+from keras import Sequential
+from keras import layers
 
 
 def build_arg_parser():
@@ -68,7 +67,7 @@ if __name__ == "__main__":
     # Use the text vectorization layer to normalize, split, and map strings to
     # integers. Note that the layer uses the custom standardization defined above.
     # Set maximum_sequence length as all samples are not of the same length.
-    vectorize_layer = TextVectorization(
+    vectorize_layer = layers.TextVectorization(
         standardize=custom_standardization,
         max_tokens=vocab_size,
         output_mode='int',
@@ -81,10 +80,10 @@ if __name__ == "__main__":
     embedding_dim = 16
     model = Sequential([
         vectorize_layer,
-        Embedding(vocab_size, embedding_dim, name="embedding"),
-        GlobalAveragePooling1D(),
-        Dense(16, activation='relu'),
-        Dense(1)
+        layers.Embedding(vocab_size, embedding_dim, name="embedding"),
+        layers.GlobalAveragePooling1D(),
+        layers.Dense(16, activation='relu'),
+        layers.Dense(1)
     ])
     tensorboard_callback = keras.callbacks.TensorBoard(log_dir="logs")
     model.compile(optimizer='adam',

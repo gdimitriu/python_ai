@@ -1,9 +1,8 @@
 import tensorflow
 import tensorflow as tf
 import tensorflow_datasets as tfds
-from tensorflow.keras import layers
-from tensorflow.keras import losses
-from tensorflow.keras.layers import TextVectorization
+from keras import layers
+from keras import losses
 
 
 def vectorize_text(text, label):
@@ -53,7 +52,7 @@ if __name__ == "__main__":
             print("Review: ", review_batch[i].numpy())
             print("Label: ", label_batch[i].numpy())
 
-    vectorize_layer = TextVectorization(
+    vectorize_layer = layers.TextVectorization(
         max_tokens=VOCAB_SIZE,
         output_mode='int',
         output_sequence_length=MAX_SEQUENCE_LENGTH)

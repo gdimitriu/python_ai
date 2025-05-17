@@ -6,8 +6,7 @@ import string
 
 import keras
 import tensorflow as tf
-from tensorflow.keras.layers import Dense, Embedding, GlobalAveragePooling1D
-from tensorflow.keras.layers import TextVectorization
+from keras import layers
 
 
 def build_arg_parser():
@@ -56,7 +55,7 @@ if __name__ == "__main__":
     # Use the text vectorization layer to normalize, split, and map strings to
     # integers. Note that the layer uses the custom standardization defined above.
     # Set maximum_sequence length as all samples are not of the same length.
-    vectorize_layer = TextVectorization(
+    vectorize_layer = layers.TextVectorization(
         standardize=custom_standardization,
         max_tokens=vocab_size,
         output_mode="int",
@@ -69,12 +68,12 @@ if __name__ == "__main__":
 
     # CREATE A CLASSIFICATION MODEL
     embedding_dim = 16
-    text_embedding = Embedding(vocab_size, embedding_dim, name="embedding")
+    text_embedding = layers.Embedding(vocab_size, embedding_dim, name="embedding")
     text_input = keras.Sequential(
         [vectorize_layer, text_embedding], name="text_input"
     )
     classifier_head = keras.Sequential(
-        [GlobalAveragePooling1D(), Dense(16, activation="relu"), Dense(1)],
+        [layers.GlobalAveragePooling1D(), layers.Dense(16, activation="relu"), layers.Dense(1)],
         name="classifier_head",
     )
 
@@ -103,7 +102,7 @@ if __name__ == "__main__":
     vocab_size_new = 10200
     sequence_length = 100
 
-    vectorize_layer_new = TextVectorization(
+    vectorize_layer_new = layers.TextVectorization(
         standardize=custom_standardization,
         max_tokens=vocab_size_new,
         output_mode="int",
@@ -144,7 +143,7 @@ if __name__ == "__main__":
 
     print(updated_embedding_variable.shape)
 
-    text_embedding_layer_new = Embedding(
+    text_embedding_layer_new = layers.Embedding(
         vectorize_layer_new.vocabulary_size(), embedding_dim, name="embedding"
     )
     text_embedding_layer_new.build(input_shape=[None])
