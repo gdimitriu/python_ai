@@ -24,4 +24,7 @@ pip3 install opencv-python
 pip3 install keras_cv
 pip3 install git+https://github.com/tensorflow/examples.git
 pip3 install pydot
+pip3 install huggingface_hub[hf_xet]
+pip3 install transformers
+
 
