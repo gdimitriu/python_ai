@@ -1,9 +1,18 @@
 import os
 import pandas as pd
 from torch.utils.data import Dataset
+from torchvision import datasets
 from torchvision.io import read_image
 import matplotlib.pyplot as plt
+import argparse
+from torchvision.transforms import ToTensor
 
+
+def build_arg_parser():
+    parser = argparse.ArgumentParser(description='custom-dataset')
+    parser.add_argument('--data-directory', dest='data_directory', type=str,
+                        default='.', help='data root')
+    return parser
 
 class CustomImageDataset(Dataset):
     def __init__(self, annotations_file, img_dir, transform=None, target_transform=None):
@@ -29,6 +38,21 @@ class CustomImageDataset(Dataset):
 if __name__ == "__main__":
     from torch.utils.data import DataLoader
 
+    args = build_arg_parser().parse_args()
+
+    training_data = datasets.FashionMNIST(
+        root=args.data_directory,
+        train=True,
+        download=True,
+        transform=ToTensor()
+    )
+
+    test_data = datasets.FashionMNIST(
+        root=args.data_directory,
+        train=False,
+        download=True,
+        transform=ToTensor()
+    )
     train_dataloader = DataLoader(training_data, batch_size=64, shuffle=True)
     test_dataloader = DataLoader(test_data, batch_size=64, shuffle=True)
     # Display image and label.

@@ -3,23 +3,13 @@ from torch import nn
 from torch.utils.data import DataLoader
 from torchvision import datasets
 from torchvision.transforms import ToTensor
+import argparse
 
-training_data = datasets.FashionMNIST(
-    root="data",
-    train=True,
-    download=True,
-    transform=ToTensor()
-)
-
-test_data = datasets.FashionMNIST(
-    root="data",
-    train=False,
-    download=True,
-    transform=ToTensor()
-)
-
-train_dataloader = DataLoader(training_data, batch_size=64)
-test_dataloader = DataLoader(test_data, batch_size=64)
+def build_arg_parser():
+    parser = argparse.ArgumentParser(description='optimizing')
+    parser.add_argument('--data-directory', dest='data_directory', type=str,
+                        default='.', help='data root')
+    return parser
 
 
 class NeuralNetwork(nn.Module):
@@ -38,9 +28,6 @@ class NeuralNetwork(nn.Module):
         x = self.flatten(x)
         logits = self.linear_relu_stack(x)
         return logits
-
-
-model = NeuralNetwork()
 
 
 def train_loop(dataloader, model, loss_fn, optimizer):
@@ -84,19 +71,40 @@ def test_loop(dataloader, model, loss_fn):
     print(f"Test Error: \n Accuracy: {(100 * correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
 
-# set parameters
-learning_rate = 1e-3
-batch_size = 64
-epochs = 10
-# Initialize the loss function
-# Common loss functions include nn.MSELoss (Mean Square Error) for regression tasks,
-# and nn.NLLLoss (Negative Log Likelihood) for classification.
-# nn.CrossEntropyLoss combines nn.LogSoftmax and nn.NLLLoss.
-loss_fn = nn.CrossEntropyLoss()
-optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
+if __name__ == "__main__":
+    args = build_arg_parser().parse_args()
+    training_data = datasets.FashionMNIST(
+        root=args.data_directory,
+        train=True,
+        download=True,
+        transform=ToTensor()
+    )
 
-for t in range(epochs):
-    print(f"Epoch {t+1}\n-------------------------------")
-    train_loop(train_dataloader, model, loss_fn, optimizer)
-    test_loop(test_dataloader, model, loss_fn)
-print("Done!")
+    test_data = datasets.FashionMNIST(
+        root=args.data_directory,
+        train=False,
+        download=True,
+        transform=ToTensor()
+    )
+
+    train_dataloader = DataLoader(training_data, batch_size=64)
+    test_dataloader = DataLoader(test_data, batch_size=64)
+
+    model = NeuralNetwork()
+
+    # set parameters
+    learning_rate = 1e-3
+    batch_size = 64
+    epochs = 10
+    # Initialize the loss function
+    # Common loss functions include nn.MSELoss (Mean Square Error) for regression tasks,
+    # and nn.NLLLoss (Negative Log Likelihood) for classification.
+    # nn.CrossEntropyLoss combines nn.LogSoftmax and nn.NLLLoss.
+    loss_fn = nn.CrossEntropyLoss()
+    optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
+
+    for t in range(epochs):
+        print(f"Epoch {t+1}\n-------------------------------")
+        train_loop(train_dataloader, model, loss_fn, optimizer)
+        test_loop(test_dataloader, model, loss_fn)
+    print("Done!")
