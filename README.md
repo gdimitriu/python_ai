@@ -10,5 +10,7 @@ Tutorials are from https://docs.pytorch.org/tutorials/
 
 Tutorials are from https://www.tensorflow.org/tutorials
 
-and also from https://keras.io/examples/
+and from https://keras.io/examples/
+
+and from https://www.w3schools.com/ai/default.asp with porting from javascript to python
 
